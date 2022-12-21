@@ -1,5 +1,6 @@
-﻿using OpenAI.NET.AI;
+using OpenAI.NET.AI;
 using OpenAI.NET.Interfaces;
+
 
 namespace OpenAI.NET
 {
