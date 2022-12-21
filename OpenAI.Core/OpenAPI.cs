@@ -13,6 +13,7 @@ namespace OpenAI.NET
 
         public OpenAPI(string apiKey)
         {
+            var tem = "sddsf";
             ApiKey = apiKey;
 
             var completionInstance = new Completion();
