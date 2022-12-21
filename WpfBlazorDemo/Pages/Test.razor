@@ -1,0 +1,58 @@
+﻿@page "/test"
+@using System.Text.RegularExpressions;
+
+<h1>OpenAI</h1>
+
+<p>Enter font size here</p>
+<input @bind="inputValue" style="width: 100%" @onkeydown="@Enter" />
+
+<p>@((MarkupString)Status)</p>
+<p>@((MarkupString)MyHTml)</p>
+
+@code {
+    private string inputValue = "create a html page with one text field called 'Prop1'";
+    private string MyHTml = "";
+    private string Status = "";
+    private OpenAI.NET.OpenAPI openai = null;
+    private async void RunScript()
+    {
+        Status = "Running";
+        StateHasChanged();
+
+        openai = openai ?? new OpenAI.NET.OpenAPI("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");
+        var comp = await openai.textCompletion.GetCompletionRetainedResults(OpenAI.NET.Models.GPTEngines.DAVINCI, new OpenAI.NET.Models.CompletionRequest(inputValue));
+
+        var choice1 = comp.choices[0].text;
+        inputValue = "";
+        Status = "";
+
+        var htmlbody = GetHtmlBody(choice1) ?? choice1;
+        MyHTml = choice1;
+        
+        StateHasChanged();
+    }
+
+    public void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            RunScript();
+        }
+    }
+
+    public string GetHtmlBody(string html)
+    {
+        RegexOptions options = RegexOptions.IgnoreCase | RegexOptions.Singleline;
+        Regex regx = new Regex("<body>(?<theBody>.*)</body>", options);
+
+        Match match = regx.Match(html);
+
+        if (match.Success)
+        {
+            string theBody = match.Groups["theBody"].Value;
+            return theBody;
+        }
+
+        return null;
+    }
+}
